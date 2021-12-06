@@ -1,11 +1,6 @@
 const trackFish = (fish: number[], days: number) => {
-  let cycle: number[] = fish.reduce(
-    (tracked, age) => {
-      tracked[age]++;
-      return tracked;
-    },
-    [0, 0, 0, 0, 0, 0, 0, 0, 0]
-  );
+  let cycle: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  fish.forEach((age) => cycle[age]++);
 
   for (let day = 1; day <= days; day++) {
     const [spawning, ...aged] = cycle;
