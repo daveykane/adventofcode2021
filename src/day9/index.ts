@@ -1,6 +1,4 @@
-const isHigher = (point: number, adjacent: number) => typeof adjacent === "undefined" || adjacent > point;
-const isHigherBasin = (point: number, adjacent: number) =>
-  typeof adjacent !== "undefined" && adjacent !== 9 && adjacent > point;
+import { getNeighbours } from "../utils/index.ts";
 
 const getLowPoints = (map: number[][]) => {
   let lowPointsSum: number = 0;
@@ -8,12 +6,7 @@ const getLowPoints = (map: number[][]) => {
 
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[0].length; x++) {
-      if (
-        isHigher(map[y][x], map[y - 1] && map[y - 1][x]) &&
-        isHigher(map[y][x], map[y][x + 1]) &&
-        isHigher(map[y][x], map[y + 1] && map[y + 1][x]) &&
-        isHigher(map[y][x], map[y][x - 1])
-      ) {
+      if (getNeighbours([y, x], map[0].length, map.length).every(([xx, yy]) => map[yy][xx] > map[y][x])) {
         lowPointsSum += map[y][x] + 1;
         lowPoints.push([y, x]);
       }
@@ -26,10 +19,11 @@ const getLowPoints = (map: number[][]) => {
 const getBasinSize = (sizes: Set<string>, map: number[][], [y, x]: number[]) => {
   sizes.add(`y${y}x${x}`);
 
-  if (isHigherBasin(map[y][x], map[y - 1] && map[y - 1][x])) getBasinSize(sizes, map, [y - 1, x]);
-  if (isHigherBasin(map[y][x], map[y][x + 1])) getBasinSize(sizes, map, [y, x + 1]);
-  if (isHigherBasin(map[y][x], map[y + 1] && map[y + 1][x])) getBasinSize(sizes, map, [y + 1, x]);
-  if (isHigherBasin(map[y][x], map[y][x - 1])) getBasinSize(sizes, map, [y, x - 1]);
+  getNeighbours([y, x], map[0].length, map.length).forEach(([xx, yy]) => {
+    if (map[yy][xx] !== 9 && map[yy][xx] > map[y][x]) {
+      getBasinSize(sizes, map, [yy, xx]);
+    }
+  });
 };
 
 export const part1 = (map: number[][]) => {
