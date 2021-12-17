@@ -21,30 +21,23 @@ const launchProbe = (probe: Probe, velocity: Velocity, { minX, maxX, minY, maxY 
   return { hitTarget, highestPoint };
 };
 
-export const part1 = (targetArea: TargetArea) => {
-  let highest = 0;
+const testProbe = (targetArea: TargetArea) => {
+  let highestY = 0;
+  const velocities: Set<string> = new Set();
 
   for (let y = -200; y <= 200; y++) {
     for (let x = -200; x <= 200; x++) {
       const { hitTarget, highestPoint } = launchProbe({ x: 0, y: 0 }, { x, y }, targetArea);
 
-      if (hitTarget) highest = Math.max(highest, highestPoint);
+      if (hitTarget) {
+        highestY = Math.max(highestY, highestPoint);
+        velocities.add(`x${x}y${y}`);
+      }
     }
   }
 
-  return highest;
+  return { highestY, velocities };
 };
 
-export const part2 = (targetArea: TargetArea) => {
-  const velocities: Set<string> = new Set();
-
-  for (let y = -200; y <= 200; y++) {
-    for (let x = -200; x <= 200; x++) {
-      const { hitTarget } = launchProbe({ x: 0, y: 0 }, { x, y }, targetArea);
-
-      if (hitTarget) velocities.add(`x${x}y${y}`);
-    }
-  }
-
-  return velocities.size;
-};
+export const part1 = (targetArea: TargetArea) => testProbe(targetArea).highestY;
+export const part2 = (targetArea: TargetArea) => testProbe(targetArea).velocities.size;
